@@ -6,6 +6,7 @@
 //     header('Location: login.php');
 //     exit;
 // }
+include("db.php")
 ?>
 
 <!DOCTYPE html>
@@ -97,6 +98,7 @@
                         Add User
                     </div>
                     <div class="card-body">
+                        <form action="<?php htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <div class="form-floating mb-3 mb-md-0">
@@ -152,6 +154,7 @@
                                         <div class="d-grid"><button type="submit" class="btn btn-primary btn-block">Create Account</button></div>
                                     </div>
                     </div>
+                    </form>
                 </div>
             </div>
             
