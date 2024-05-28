@@ -210,7 +210,7 @@
                                     <option value="faculty">Saturday</option>
                                     <option value="faculty">Sunday</option>
                                 </select>
-                                <label for="inputDayOfWeek">Day of Week</label>
+                                <label for="inputDayOfWeek">Day of Week wewew</label>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
