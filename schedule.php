@@ -6,6 +6,10 @@
 //     header('Location: login.php');
 //     exit;
 // }
+include("db.php");
+// Fetch user data from the database
+$query = "SELECT id, role, cards_uid,  name , date_created FROM users";
+$result = mysqli_query($conn, $query);
 ?>
 
 <!DOCTYPE html>
@@ -20,11 +24,72 @@
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round|Open+Sans">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+	$('[data-toggle="tooltip"]').tooltip();
+	var actions = $("table td:last-child").html();
+	// Append table with add row form on add new button click
+    $(".add-new").click(function(){
+		$(this).attr("disabled", "disabled");
+		var index = $("table tbody tr:last-child").index();
+        var row = '<tr>' +
+            '<td><input type="text" class="form-control" name="name" id="name"></td>' +
+            '<td><input type="text" class="form-control" name="department" id="department"></td>' +
+            '<td><input type="text" class="form-control" name="phone" id="phone"></td>' +
+			'<td>' + actions + '</td>' +
+        '</tr>';
+    	$("table").append(row);		
+		$("table tbody tr").eq(index + 1).find(".add, .edit").toggle();
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+	// Add row on add button click
+	$(document).on("click", ".add", function(){
+		var empty = false;
+		var input = $(this).parents("tr").find('input[type="text"]');
+        input.each(function(){
+			if(!$(this).val()){
+				$(this).addClass("error");
+				empty = true;
+			} else{
+                $(this).removeClass("error");
+            }
+		});
+		$(this).parents("tr").find(".error").first().focus();
+		if(!empty){
+			input.each(function(){
+				$(this).parent("td").html($(this).val());
+			});			
+			$(this).parents("tr").find(".add, .edit").toggle();
+			$(".add-new").removeAttr("disabled");
+		}		
+    });
+	// Edit row on edit button click
+	$(document).on("click", ".edit", function(){		
+        $(this).parents("tr").find("td:not(:last-child)").each(function(){
+			$(this).html('<input type="text" class="form-control" value="' + $(this).text() + '">');
+		});		
+		$(this).parents("tr").find(".add, .edit").toggle();
+		$(".add-new").attr("disabled", "disabled");
+    });
+	// Delete row on delete button click
+	$(document).on("click", ".delete", function(){
+        $(this).parents("tr").remove();
+		$(".add-new").removeAttr("disabled");
+    });
+});
+</script>
 </head>
 <body class="sb-nav-fixed">
-<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark"s>
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
-    
+   
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
     <!-- Navbar Search-->
@@ -67,10 +132,12 @@
                     <a class="nav-link" href="teacherList.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Faculty
-                    </a><a class="nav-link" href="attendance.php">
+                    </a>
+                    <a class="nav-link" href="attendance.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Attendance
-                    </a></a> <a class="nav-link" href="schedule.php">
+                    </a>
+                     <a class="nav-link" href="schedule.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Schedule
                     </a>
@@ -78,6 +145,7 @@
             </div>
             <div class="sb-sidenav-footer">
                   <div class="small">Logged in as: Admin</div>
+                
                 <?php //echo $_SESSION['username']; ?>
             </div>
         </nav>
@@ -85,43 +153,54 @@
     <div id="layoutSidenav_content">
         <main>
             <div class="container-fluid px-4">
-                <h1 class="mt-4">Faculty Table</h1>
-                <ol class="breadcrumb mb-4">
-                    <li class="breadcrumb-item active">Faculty Table</li>
-                </ol>
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="mt-4">Schedules</h1>
+                <a href="addSchedule.php">
+                <button  type="button" class="btn btn-primary btn-lg"><i
+                        class="fas fa-download fa-sm text-white"></i> Add Schedules</button>
+                </a>
+    
+            </div>
+                
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
-                        Faculty Table
+                        Schedules
                     </div>
                     <div class="card-body">
-                        <table id="datatablesSimple">
-                            <thead>
-                                <tr>
-                                    <th>NAME</th>
-                                    <th>Faculty ID</th>
-                                    
-                                   
-                                </tr>
-                            </thead>
-                            
-                            <tbody>
-                                <tr>
-                                    <td>Maria Blake</td>
-                                    <td>C21102307</td>
-                                  
-                                   
-                                </tr>
-                                <tr>
-                                    <td>Nicola Connor</td>
-                                    <td>C21102308</td>
-                                </tr>
-                                <tr>
-                                    <td>Novah Prince</td>
-                                    <td>C21102309</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <table class="table table-bordered" id="datatablesSimple">
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>START TIME</th>
+                <th>END TIME</th>
+                <th>SUBJECT</th>
+                <th>SECTION</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php
+            if (mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $date_created = new DateTime($row['date_created']);
+                    $formatted_date = $date_created->format('F j, Y'); // e.g., May 29, 2024
+                    echo "<tr>";
+                    echo "<td>" . htmlspecialchars($row['role']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['cards_uid']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+                    echo "<td>" . htmlspecialchars($formatted_date) . "</td>";
+                    echo "<td>
+                            <a class='edit' title='Edit' data-toggle='tooltip'><i class='material-icons'>&#xE254;</i></a>
+                            <a class='delete' title='Delete' data-toggle='tooltip'><i class='material-icons'>&#xE872;</i></a>
+                          </td>";
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='5'>No users found</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
                     </div>
                 </div>
             </div>

@@ -74,6 +74,9 @@ $result = mysqli_query($conn, $query);
                     </a><a class="nav-link" href="attendance.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Attendance
+                    </a></a> <a class="nav-link" href="schedule.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                        Schedule
                     </a>
                 </div>
             </div>
