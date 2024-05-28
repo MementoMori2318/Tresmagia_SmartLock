@@ -6,6 +6,10 @@
 //     header('Location: login.php');
 //     exit;
 // }
+include("db.php");
+// Fetch user data from the database
+$query = "SELECT id, role, cards_uid,  name , date_created FROM users";
+$result = mysqli_query($conn, $query);
 ?>
 
 <!DOCTYPE html>
@@ -21,7 +25,7 @@
     <link href="css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round|Open+Sans">
-<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"> -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -120,10 +124,7 @@ $(document).ready(function(){
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Users
                     </a>
-                    <a class="nav-link" href="cardsID.php">
-                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                        RIFD Card
-                    </a>
+                    
                     <a class="nav-link" href="studentList.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Student
@@ -162,161 +163,39 @@ $(document).ready(function(){
                         User Table
                     </div>
                     <div class="card-body">
-                        <table class="table table-bordered" id="datatablesSimple">
-                            <thead>
-                                <tr>
-                                    <th>User Type</th>
-                                    <th>Card UID</th>      
-                                    <th>NAME</th>                      
-                                    
-                                    <th>ACTION</th>
-                                </tr>
-                            </thead>
-                            
-                            <tbody>
-                                <tr>
-                                    <td>Student</td>
-                                    <td>C4R03XAM4P1E</td>        
-                                    <td>Joanne Barker</td>
-                                   
-                                    <td>
-                                    
-                                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Faculty</td>
-                                    <td>C4R03XAM4P1E</td>        
-                                    <td>Charles Preston</td>                        
-                                    
-                                    <td>
-                                    
-                                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Student</td>
-                                    <td>C4R03XAM4P1E</td>        
-                                    <td>Karol Rowland</td>                                  
-                                    
-                                    <td>
-                                    
-                                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                    </td>
-                                <tr>
-                                    <td>Student</td>
-                                    <td>C4R03XAM4P1E</td>        
-                                    <td>Joanne Barker</td>
-                                    
-                                    <td>
-                                    
-                                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Faculty</td>
-                                    <td>C4R03XAM4P1E</td>        
-                                    <td>Charles Preston</td>                        
-                                    
-                                    <td>
-                                    
-                                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Student</td>
-                                    <td>C4R03XAM4P1E</td>        
-                                    <td>Karol Rowland</td>                                  
-                                    
-                                    <td>
-                                    
-                                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                    </td>
-                                <tr>
-                                    <td>Student</td>
-                                    <td>C4R03XAM4P1E</td>        
-                                    <td>Joanne Barker</td>
-                                    
-                                    <td>
-                                    
-                                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Faculty</td>
-                                    <td>C4R03XAM4P1E</td>        
-                                    <td>Charles Preston</td>                        
-                                   
-                                    <td>
-                                    
-                                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Student</td>
-                                    <td>C4R03XAM4P1E</td>        
-                                    <td>Karol Rowland</td>                                  
-                                    
-                                    <td>
-                                    
-                                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                    </td>
-                                <tr>
-                                    <td>Student</td>
-                                    <td>C4R03XAM4P1E</td>        
-                                    <td>Joanne Barker</td>
-                                    
-                                    <td>
-                                    
-                                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Faculty</td>
-                                    <td>C4R03XAM4P1E</td>        
-                                    <td>Charles Preston</td>                        
-                                    
-                                    <td>
-                                    
-                                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Student</td>
-                                    <td>C4R03XAM4P1E</td>        
-                                    <td>Karol Rowland</td>                                  
-                                   
-                                    
-                                    <td>
-                                    
-                                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Student</td>
-                                    <td>C4R03XAM4P1E</td>        
-                                    <td>Karol Rowland</td>                                  
-                                   
-                                    <td>
-                                    
-                                        <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <table class="table table-bordered" id="datatablesSimple">
+        <thead>
+            <tr>
+                <th>User Role</th>
+                <th>Card UID</th>
+                <th>Name</th>
+                <th>DATE CREATED</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php
+            if (mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $date_created = new DateTime($row['date_created']);
+                    $formatted_date = $date_created->format('F j, Y'); // e.g., May 29, 2024
+                    echo "<tr>";
+                    echo "<td>" . htmlspecialchars($row['role']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['cards_uid']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+                    echo "<td>" . htmlspecialchars($formatted_date) . "</td>";
+                    echo "<td>
+                            <a class='edit' title='Edit' data-toggle='tooltip'><i class='material-icons'>&#xE254;</i></a>
+                            <a class='delete' title='Delete' data-toggle='tooltip'><i class='material-icons'>&#xE872;</i></a>
+                          </td>";
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='5'>No users found</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
                     </div>
                 </div>
             </div>

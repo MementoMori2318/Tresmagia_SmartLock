@@ -6,6 +6,10 @@
 //     header('Location: login.php');
 //     exit;
 // }
+include("db.php");
+// Fetch user data from the database
+$query = "SELECT name, user_id, year_section FROM users WHERE role = 'Student'";
+$result = mysqli_query($conn, $query);
 ?>
 
 <!DOCTYPE html>
@@ -59,10 +63,7 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Users
                     </a>
-                    <a class="nav-link" href="cardsID.php">
-                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                        RIFD Card
-                    </a>
+                    
                     <a class="nav-link" href="studentList.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Student
@@ -108,29 +109,19 @@
                                 </tr>
                             </thead>
                             
-                            <tbody>
-                                <tr>
-                                    <td>Opo</td>
-                                    <td>C21102307</td>
-                                    <td>BSIT-3C</td>
-                                  
-                                   
-                                </tr>
-                                <tr>
-                                    <td>Opo</td>
-                                    <td>C21102308</td>
-                                    <td>BSIT-3C</td>
-                                  
-                                   
-                                </tr>
-                                <tr>
-                                    <td>aa</td>
-                                    <td>C21102309</td>
-                                    <td>BSIT-3C</td>
-                                   
-                                  
-                                </tr>
-                            </tbody>
+                                    <?php
+                        if (mysqli_num_rows($result) > 0) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                echo "<tr>";
+                                echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['user_id']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['year_section']) . "</td>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='3'>No students found</td></tr>";
+                        }
+                        ?>
                         </table>
                     </div>
                 </div>

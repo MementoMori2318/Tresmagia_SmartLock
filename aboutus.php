@@ -51,10 +51,7 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Users
                     </a>
-                    <a class="nav-link" href="cardsID.php">
-                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                        RIFD Card
-                    </a>
+                    
                     <a class="nav-link" href="studentList.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Student

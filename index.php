@@ -6,6 +6,15 @@
 //     header('Location: login.php');
 //     exit;
 // }
+include("db.php");
+
+$count_query = "SELECT COUNT(*) AS user_count FROM users";
+$count_result = mysqli_query($conn, $count_query);
+$user_count = mysqli_fetch_assoc($count_result)['user_count'];
+
+$student_count_query = "SELECT COUNT(*) AS student_count FROM users WHERE role = 'Student'";
+$student_count_result = mysqli_query($conn, $student_count_query);
+$student_count = mysqli_fetch_assoc($student_count_result)['student_count'];
 ?>
 
 <!DOCTYPE html>
@@ -60,10 +69,7 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Users
                     </a>
-                    <a class="nav-link" href="cardsID.php">
-                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                        RIFD Card
-                    </a>
+                    
                     <a class="nav-link" href="studentList.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Student
@@ -119,7 +125,7 @@
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                             Number of Users</div>
-                        <div class="h1 mb-0 font-weight-bold text-gray-800">40</div>
+                            <div class="h1 mb-0 font-weight-bold text-gray-800"><?php echo $user_count; ?></div>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-user fa-2x text-gray-300"></i>
@@ -137,7 +143,7 @@
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                             Number of Students</div>
-                        <div class="h1 mb-0 font-weight-bold text-gray-800">36</div>
+                            <div class="h1 mb-0 font-weight-bold text-gray-800"><?php echo $student_count; ?></div>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-graduation-cap fa-2x text-gray-300"></i>
