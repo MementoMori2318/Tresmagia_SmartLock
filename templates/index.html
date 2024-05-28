@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Reader</title>
+    <script>
+        function updateCardData() {
+            fetch('http://192.168.1.17:5000/get_card_data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        document.getElementById('cardId').innerText = 'Card ID: ' + data.id;
+                    } else {
+                        document.getElementById('cardId').innerText = 'No card detected';
+                    }
+                    setTimeout(updateCardData, 1000); // Repeat every second
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            updateCardData();
+        });
+    </script>
+</head>
+<body>
+    <h1>RFID Card Reader</h1>
+    <p id="cardId">No card detected</p>
+</body>
+</html>

@@ -6,7 +6,9 @@
 //     header('Location: login.php');
 //     exit;
 // }
-include("db.php")
+include("db.php");
+
+
 ?>
 
 <!DOCTYPE html>
@@ -21,6 +23,42 @@ include("db.php")
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <script>
+       function updateCardData() {
+    fetch('card_data.txt')
+        .then(response => response.text()) // Parse as text
+        .then(data => {
+            if (data.trim() && data.trim() !== "None") {
+                document.getElementById('inputCardUid').value = data.trim();
+                console.log("Card ID:", data.trim());
+                setTimeout(clearCardData, 5000);  // Clear the card data after 5 seconds
+            }
+            setTimeout(updateCardData, 100); // Repeat every 100ms
+        })
+        .catch(error => {
+            console.error("Error fetching card data:", error);
+            setTimeout(updateCardData, 100); // Repeat every 100ms even if there is an error
+        });
+}
+
+function clearCardData() {
+    fetch('/addUser.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'clear_card_data=true'
+    }).then(response => {
+        if (response.ok) {
+            console.log("Card data cleared.");
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    updateCardData();
+});
+    </script>
 </head>
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark"s>
@@ -98,63 +136,65 @@ include("db.php")
                         Add User
                     </div>
                     <div class="card-body">
-                        <form action="<?php htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
-                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <div class="form-floating mb-3 mb-md-0">
-                                                <input class="form-control" id="inputName" name="Name" type="text" placeholder="Enter Name" value="" />
-                                                <label for="inputFirstName">Name</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                <select class="form-select form-control" aria-label="Default select example" id="inputUserType" name="userType">
-                                                    <option  value="student">Student</option>    
-                                                    <option  value="teacher">Staff</option>
-                                                    <option  value="teacher">Faculty</option>               
-                                                </select>
-                                               
-                                                <label for="inputUserType">User Type</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <input class="form-control" id="inputStudentID" name="studentId" type="text" placeholder="C21102307" value="" />
-                                        <label for="inputStudentID">StudentID</label>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <div class="form-floating mb-3 mb-md-0">
-                                                <input class="form-control" id="inputCardUid" name="inputCardUid" type="text" placeholder="Card UID" />
-                                                <label for="inputCardUid">Tap Card </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-floating mb-3 mb-md-0">
-                                                <input class="form-control" id="inputYearSection" name="inputYearSection" type="password" placeholder="BSIT - 3C" />
-                                                <label for="inputYearSection">Year & Section</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <input class="form-control" id="inputEmail" name="email" type="email" placeholder="name@example.com" value="" />
-                                        <label for="inputEmail">Email address</label>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <div class="form-floating mb-3 mb-md-0">
-                                                <input class="form-control" id="inputPassword" name="password" type="password" placeholder="Create a password" />
-                                                <label for="inputPassword">Password</label>
-                                            </div>
-                                        </div>
-                                       
-                                    </div>
-                                    
-                                    <div class="mt-4 mb-0">
-                                        <div class="d-grid"><button type="submit" class="btn btn-primary btn-block">Create Account</button></div>
-                                    </div>
-                    </div>
-                    </form>
+                   
+
+<form action="action_page.php" method="POST">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="form-floating mb-3 mb-md-0">
+                <input class="form-control" id="inputName" name="name" type="text" placeholder="Enter Name" value="" />
+                <label for="inputFirstName">Name</label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating">
+                <select class="form-select form-control" aria-label="Default select example" id="inputUserRole" name="userRole">
+                    <option value="student">Student</option>
+                    <option value="staff">Staff</option>
+                    <option value="faculty">Faculty</option>
+                </select>
+                <label for="inputUserRole">User Type</label>
+            </div>
+        </div>
+    </div>
+    <div class="form-floating mb-3">
+        <input class="form-control" id="inputUserId" name="userId" type="text" placeholder="C21102307" value="" />
+        <label for="inputUserId">User ID</label>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+        <div class="form-floating mb-3">
+        <input class="form-control" id="inputCardUid" name="inputCardUid" type="text" placeholder="Card UID" />
+        <label for="inputCardUid">Tap Card </label>
+    </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating mb-3 mb-md-0">
+                <input class="form-control" id="inputYearSection" name="inputYearSection" type="text" placeholder="BSIT - 3C" />
+                <label for="inputYearSection">Year & Section</label>
+            </div>
+        </div>
+    </div>
+    <div class="form-floating mb-3">
+        <input class="form-control" id="inputEmail" name="email" type="email" placeholder="name@example.com" value="" />
+        <label for="inputEmail">Email address</label>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="form-floating mb-3 mb-md-0">
+                <input class="form-control" id="inputPassword" name="password" type="password" placeholder="Create a password" />
+                <label for="inputPassword">Password</label>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4 mb-0">
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-block">Add User</button>
+        </div>
+    </div>
+</form>
+
+   
                 </div>
             </div>
             
@@ -191,20 +231,25 @@ include("db.php")
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
 <script src="js/datatables-simple-demo.js"></script>
 <script>
-    document.getElementById('inputUserType').addEventListener('change', function() {
-        var userType = this.value;
-        var studentIDInput = document.getElementById('inputStudentID');
+    document.getElementById('inputUserRole').addEventListener('change', function() {
+        var userRole = this.value;
+       
         var inputYearSection = document.getElementById('inputYearSection');
 
-        if (userType === 'student') {
-            studentIDInput.disabled = false;
+        if (userRole === 'student') {
+           
             inputYearSection.disabled = false;
         } else {
-            studentIDInput.disabled = true;
+           
+            inputYearSection.value = "";  // Set to empty string when not student
+           
             inputYearSection.disabled = true;
         }
     });
+    
 </script>
+
+
 
 </body>
 </html>

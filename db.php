@@ -1,7 +1,7 @@
 <?php
 $host = "localhost"; // Change if your MySQL server is running on a different host
-$username = "tresmagia"; // Default username for XAMPP
-$password = "tresmagia"; // Default password for XAMPP
+$username = "tresmagia";
+$password = "tresmagia"; 
 $database = "tresmagia_smartlock"; // Change to the name of your database
 
 // Create connection
