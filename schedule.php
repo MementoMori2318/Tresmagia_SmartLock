@@ -7,9 +7,15 @@
 //     exit;
 // }
 include("db.php");
-// Fetch user data from the database
-$query = "SELECT id, role, cards_uid,  name , date_created FROM users";
-$result = mysqli_query($conn, $query);
+ // Fetch schedule data from the database
+ $sql = "SELECT schedules.day_of_week, schedules.start_time, schedules.end_time, 
+ subject.subject_name, section.section_name 
+ FROM schedules 
+ JOIN subject ON schedules.subject_id = subject.subject_id 
+ JOIN section ON schedules.section_id = section.section_id";
+
+$result = $conn->query($sql);
+
 ?>
 
 <!DOCTYPE html>
@@ -25,13 +31,39 @@ $result = mysqli_query($conn, $query);
     <link href="css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round|Open+Sans">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+
+            // Check if success message exists in URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const successMessage = urlParams.get('success_message');
+
+            if (successMessage) {
+                Toast.fire({
+                    icon: 'success',
+                    title: successMessage
+                });
+            }
+        });
+
 $(document).ready(function(){
 	$('[data-toggle="tooltip"]').tooltip();
 	var actions = $("table td:last-child").html();
@@ -180,24 +212,28 @@ $(document).ready(function(){
         </thead>
         <tbody>
         <?php
-            if (mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $date_created = new DateTime($row['date_created']);
-                    $formatted_date = $date_created->format('F j, Y'); // e.g., May 29, 2024
+            if ($result->num_rows > 0) {
+                // Loop through the data and display in table rows
+                while ($row = $result->fetch_assoc()) {
+                    // Convert and format the start and end times
+                    $startTime = new DateTime($row['start_time']);
+                    $endTime = new DateTime($row['end_time']);
+                    $formattedStartTime = $startTime->format('h:i A');
+                    $formattedEndTime = $endTime->format('h:i A');
+        
                     echo "<tr>";
-                    echo "<td>" . htmlspecialchars($row['role']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['cards_uid']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['name']) . "</td>";
-                    echo "<td>" . htmlspecialchars($formatted_date) . "</td>";
-                    echo "<td>
-                            <a class='edit' title='Edit' data-toggle='tooltip'><i class='material-icons'>&#xE254;</i></a>
-                            <a class='delete' title='Delete' data-toggle='tooltip'><i class='material-icons'>&#xE872;</i></a>
-                          </td>";
+                    echo "<td>" . htmlspecialchars($row['day_of_week']) . "</td>";
+                    echo "<td>" . htmlspecialchars($formattedStartTime) . "</td>";
+                    echo "<td>" . htmlspecialchars($formattedEndTime) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['subject_name']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['section_name']) . "</td>";
                     echo "</tr>";
                 }
             } else {
-                echo "<tr><td colspan='5'>No users found</td></tr>";
+                echo "<tr><td colspan='5'>No schedule found</td></tr>";
             }
+        
+
             ?>
         </tbody>
     </table>

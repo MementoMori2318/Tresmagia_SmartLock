@@ -1,3 +1,8 @@
+<?php
+include("db.php");
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,8 +15,36 @@
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+
+            // Check if success message exists in URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const successMessage = urlParams.get('success_message');
+
+            if (successMessage) {
+                Toast.fire({
+                    icon: 'success',
+                    title: successMessage
+                });
+            }
+        });
+    </script>
     <style>
         .btn-open-popup {
+          
             padding: 12px 24px;
             font-size: 18px;
             background-color: green;
@@ -28,7 +61,7 @@
 
         .overlay-container {
             display: none;
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -116,6 +149,24 @@
             display: flex;
             opacity: 1;
         }
+        
+        .autocomplete-suggestions {
+            display: none;
+            border: 1px solid #e0e0e0;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #fff;
+            position: absolute;
+            z-index: 999;
+            width: calc(100% - 2px);
+        }
+        .autocomplete-suggestion {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .autocomplete-suggestion:hover {
+            background: #f0f0f0;
+        }
     </style>
 </head>
 <body class="sb-nav-fixed">
@@ -199,18 +250,19 @@
                         Add Schedule
                     </div>
                     <div class="card-body">
-                        <form action="action_page.php" method="POST">
+                    <form action="action_page.php" method="POST">
+                            <input type="hidden" name="add_schedule" value="1">
                             <div class="form-floating mb-3">
-                                <select class="form-select form-control" aria-label="Default select example" id="inputDayOfWeek" name="week">
-                                    <option value="student">Monday</option>
-                                    <option value="staff">Tuesday</option>
-                                    <option value="faculty">Wednesday</option>
-                                    <option value="student">Thursday</option>
-                                    <option value="staff">Friday</option>
-                                    <option value="faculty">Saturday</option>
-                                    <option value="faculty">Sunday</option>
+                                <select class="form-select form-control" aria-label="Default select example" id="inputDayOfWeek" name="day_of_week">
+                                    <option value="Monday">Monday</option>
+                                    <option value="Tuesday">Tuesday</option>
+                                    <option value="Wednesday">Wednesday</option>
+                                    <option value="Thursday">Thursday</option>
+                                    <option value="Friday">Friday</option>
+                                    <option value="Saturday">Saturday</option>
+                                    <option value="Sunday">Sunday</option>
                                 </select>
-                                <label for="inputDayOfWeek">Day of Week wewew</label>
+                                <label for="inputDayOfWeek">Day of Week</label>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
@@ -229,23 +281,26 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3 mb-md-0">
-                                        <input class="form-control" id="inputSubject" name="subject" type="text" placeholder="subject" />
+                                        <input class="form-control" id="inputSubject" name="subject" type="text" placeholder="subject" oninput="fetchSuggestions('subject', this.value)" />
                                         <label for="inputSubject">Subject</label>
+                                        <div id="subjectSuggestions" class="autocomplete-suggestions" data-input="inputSubject"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3 mb-md-0">
-                                        <input class="form-control" id="inputSection" name="section" type="text" placeholder="section" />
-                                        <label for="inputSection">Section</label>
+                                            <input class="form-control" id="inputSection" name="section" type="text" placeholder="section" oninput="fetchSuggestions('section', this.value)" />
+                                            <label for="inputSection">Section</label>
+                                            <div id="sectionSuggestions" class="autocomplete-suggestions" data-input="inputSection"></div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>  
                             <div class="mt-4 mb-0">
                                 <div class="d-grid">
                                     <button type="submit" class="btn btn-primary btn-block">Add Schedule</button>
                                 </div>
                             </div>
                         </form>
+
                     </div>
                 </div>
         </main>
@@ -270,9 +325,10 @@
 <div id="popupSubject" class="overlay-container">
     <div class="popup-box">
         <h2 style="color: green;">Add Subject</h2>
-        <form class="form-container">
+        <form action="action_page.php" method="POST" class="form-container">
+        <input type="hidden" name="add_subject" value="1">
             <label class="form-label" for="subject">Subject Name:</label>
-            <input class="form-input" type="text" placeholder="Enter Subject Name" id="subject" name="subject" required>
+            <input class="form-input" type="text" placeholder="Enter Subject Name" id="subject_name" name="subject_name" required>
            
             <button class="btn-submit" type="submit">Submit</button>
         </form>
@@ -282,35 +338,102 @@
 <div id="popupSection" class="overlay-container">
     <div class="popup-box">
         <h2 style="color: green;">Add Section</h2>
-        <form class="form-container">
+        <form action="action_page.php" method="POST" class="form-container">
+        <input type="hidden" name="add_section" value="1">
             <label class="form-label" for="sectionName">Section Name:</label>
-            <input class="form-input" type="text" placeholder="Enter Subject Name" id="sectionName" name="sectionName" required>
+            <input class="form-input" type="text" placeholder="Enter Section Name" id="section_name" name="section_name" required>
 
             <label class="form-label" for="course">Course Name:</label>
-            <input class="form-input" type="text" placeholder="Enter Course Name" id="course" name="course" required>
+            <select class="form-input" id="course" name="course" required>
+                <option value="BSIT">BSIT</option>
+                <option value="BSCS">BSCS</option>
+                <option value="BSIS">BSIS</option>
+            </select>
 
             <label class="form-label" for="year">Year:</label>
-            <input class="form-input" type="text" placeholder="Enter Year" id="year" name="year" required>
+            <select class="form-input" id="year" name="year" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
 
             <label class="form-label" for="section">Section:</label>
-            <input class="form-input" type="text" placeholder="Enter Section" id="section" name="section" required>
-                                   
+            <select class="form-input" id="section" name="section" required>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+            </select>                            
             <button class="btn-submit" type="submit">Submit</button>
         </form>
         <button class="btn-close-popup" onclick="togglePopupSection()">Close</button>
     </div>
 </div>
 <script>
-    function togglePopupSubject() {
-        const overlay = document.getElementById('popupSubject');
-        
-        overlay.classList.toggle('show');
+function togglePopupSubject() {
+    const overlay = document.getElementById('popupSubject');
+    
+    overlay.classList.toggle('show');
+    
+   
+}
+
+function togglePopupSection() {
+    const overlay = document.getElementById('popupSection');
+    
+    
+    overlay.classList.toggle('show');
+    
+  
+}
+    // Function to handle AJAX request for suggestions
+    function fetchSuggestions(type, query) {
+    if (query.length < 1) {
+        document.getElementById(type + 'Suggestions').innerHTML = '';
+        return;
     }
-    function togglePopupSection() {
-        const overlay = document.getElementById('popupSection');
-        
-        overlay.classList.toggle('show');
+    
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'action_page.php', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onload = function () {
+        if (this.status === 200) {
+            document.getElementById(type + 'Suggestions').innerHTML = this.responseText;
+            document.getElementById(type + 'Suggestions').style.display = 'block';
+        }
+    };
+    xhr.send('search=' + type + '&query=' + query);
+}
+
+// Event listener for clicks on suggestion items
+document.addEventListener('click', function (e) {
+    if (e.target.matches('.autocomplete-suggestion')) {
+        e.preventDefault();
+        var inputId = e.target.parentElement.getAttribute('data-input');
+        document.getElementById(inputId).value = e.target.textContent;
+        document.getElementById(inputId + 'Suggestions').innerHTML = ''; // Clear suggestions
     }
+}, false);
+
+// Close suggestions when clicking outside the suggestions box
+document.addEventListener('click', function (e) {
+    if (!e.target.matches('.form-control') && !e.target.matches('.autocomplete-suggestion')) {
+        document.getElementById('subjectSuggestions').innerHTML = '';
+        document.getElementById('sectionSuggestions').innerHTML = '';
+    }
+});
+
+// Close suggestions when clicking another input field
+document.querySelectorAll('.form-control').forEach(function(input) {
+    input.addEventListener('focus', function() {
+        document.getElementById('subjectSuggestions').innerHTML = '';
+        document.getElementById('sectionSuggestions').innerHTML = '';
+    });
+});
+
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
