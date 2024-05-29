@@ -6,8 +6,12 @@
 //     header('Location: login.php');
 //     exit;
 // }
-?>
+include("db.php");
+// Fetch user data from the database
+$query = "SELECT name, user_id, year_section FROM users WHERE role IN ('Faculty', 'Admin', 'Staff')";
+$result = mysqli_query($conn, $query);
 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -105,22 +109,19 @@
                                 </tr>
                             </thead>
                             
-                            <tbody>
-                                <tr>
-                                    <td>Maria Blake</td>
-                                    <td>C21102307</td>
-                                  
-                                   
-                                </tr>
-                                <tr>
-                                    <td>Nicola Connor</td>
-                                    <td>C21102308</td>
-                                </tr>
-                                <tr>
-                                    <td>Novah Prince</td>
-                                    <td>C21102309</td>
-                                </tr>
-                            </tbody>
+                            <?php
+                        if (mysqli_num_rows($result) > 0) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                echo "<tr>";
+                                echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['user_id']) . "</td>";
+                               
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='3'>No User found</td></tr>";
+                        }
+                        ?>
                         </table>
                     </div>
                 </div>
